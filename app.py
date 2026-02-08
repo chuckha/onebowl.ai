@@ -1,5 +1,5 @@
 import os
-from urllib.parse import urlparse
+from urllib.parse import urldefrag, urlparse
 
 from flask import Flask, render_template, request
 from flask_limiter import Limiter
@@ -14,6 +14,10 @@ app = Flask(__name__)
 limiter = Limiter(get_remote_address, app=app, default_limits=[])
 
 APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
+
+
+def normalize_url(url: str) -> str:
+    return urldefrag(url).url
 
 
 @app.route("/")
@@ -36,6 +40,8 @@ def analyze():
     if parsed.scheme not in ("http", "https") or not parsed.netloc:
         return render_template("error.html", message="Please enter a valid URL."), 400
 
+    url = normalize_url(url)
+
     cached = cache_get(url)
     if cached is not None:
         return render_template("recipe.html", recipe=cached)
@@ -56,6 +62,7 @@ def analyze():
 
 @app.route("/recipe/<path:url>")
 def view_recipe(url):
+    url = normalize_url(url)
     recipe = cache_get(url)
     if recipe is None:
         return render_template("error.html", message="Recipe not found."), 404
