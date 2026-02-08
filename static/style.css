@@ -1,0 +1,178 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #f8f7f4;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d5016;
+    text-decoration: none;
+}
+
+.tagline {
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+/* Form */
+.url-form {
+    margin-top: 3rem;
+}
+
+.url-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.input-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.input-row input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.input-row input:focus {
+    outline: none;
+    border-color: #2d5016;
+}
+
+.input-row button {
+    padding: 0.75rem 1.5rem;
+    background: #2d5016;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.input-row button:hover {
+    background: #3d6b20;
+}
+
+/* Recipe */
+h1 {
+    margin-bottom: 0.25rem;
+}
+
+.source {
+    color: #666;
+    margin-bottom: 2rem;
+    word-break: break-all;
+}
+
+.source a {
+    color: #2d5016;
+}
+
+h2 {
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #e0ddd5;
+    padding-bottom: 0.5rem;
+}
+
+/* Bowls */
+.bowl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.bowl-card {
+    background: white;
+    border: 1px solid #e0ddd5;
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+.bowl-card h3 {
+    color: #2d5016;
+    margin-bottom: 0.25rem;
+}
+
+.bowl-card .explanation {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.bowl-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.bowl-card li {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #f0ede5;
+}
+
+.bowl-card li:last-child {
+    border-bottom: none;
+}
+
+.note {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* Method */
+.method ol {
+    padding-left: 1.5rem;
+}
+
+.method li {
+    margin-bottom: 0.75rem;
+}
+
+/* Error */
+.error-box {
+    background: white;
+    border: 1px solid #e0ddd5;
+    border-left: 4px solid #c0392b;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.error-box h2 {
+    color: #c0392b;
+    border: none;
+    padding: 0;
+    margin-bottom: 0.5rem;
+}
+
+.error-box a {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #2d5016;
+    font-weight: 600;
+}

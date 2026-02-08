@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}{{ recipe.title }} — OneBowl{% endblock %}
+
+{% block content %}
+<h1>{{ recipe.title }}</h1>
+<p class="source">Source: <a href="{{ recipe.source_url }}">{{ recipe.source_url }}</a></p>
+
+<section class="bowls">
+    <h2>Bowls</h2>
+    <div class="bowl-grid">
+        {% for bowl in recipe.bowls %}
+        <div class="bowl-card">
+            <h3>{{ bowl.label }}</h3>
+            <p class="explanation">{{ bowl.explanation }}</p>
+            <ul>
+                {% for ing in bowl.ingredients %}
+                <li>
+                    {% if ing.quantity %}{{ ing.quantity }} {% endif %}{{ ing.name }}{% if ing.note %} <span class="note">({{ ing.note }})</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="method">
+    <h2>Method</h2>
+    <ol>
+        {% for step in recipe.method_steps %}
+        <li>{{ step }}</li>
+        {% endfor %}
+    </ol>
+</section>
+{% endblock %}
