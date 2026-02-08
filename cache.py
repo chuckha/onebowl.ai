@@ -46,15 +46,15 @@ def put(url: str, recipe: BowledRecipe) -> None:
         conn.close()
 
 
-def recent(limit: int = 10) -> list[BowledRecipe]:
+def recent(limit: int = 10) -> list[tuple[BowledRecipe, bool]]:
     conn = _connect()
     try:
         rows = conn.execute(
-            "SELECT data FROM cache ORDER BY created_at DESC LIMIT ?", (limit,)
+            "SELECT data, flagged FROM cache ORDER BY created_at DESC LIMIT ?", (limit,)
         ).fetchall()
     finally:
         conn.close()
-    return [BowledRecipe.model_validate_json(row[0]) for row in rows]
+    return [(BowledRecipe.model_validate_json(row[0]), bool(row[1])) for row in rows]
 
 
 def flag(url: str) -> bool:

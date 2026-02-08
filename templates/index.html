@@ -15,9 +15,10 @@
 <section class="recent-recipes">
     <h2>Recent Recipes</h2>
     <ul class="recipe-list">
-        {% for recipe in recipes %}
+        {% for recipe, flagged in recipes %}
         <li>
             <a href="/recipe/{{ recipe.source_url | urlencode }}">{{ recipe.title }}</a>
+            {% if flagged %}<span class="flagged-badge">Flagged</span>{% endif %}
         </li>
         {% endfor %}
     </ul>
