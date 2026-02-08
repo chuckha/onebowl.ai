@@ -1,30 +1,61 @@
-import anthropic
+import os
+from typing import Protocol
 
-from config import get_api_key
+import config  # noqa: F401 — triggers load_dotenv()
+
 from models import BowledRecipe, RawRecipe
+from providers import AnthropicProvider, OpenAIProvider
 
 SYSTEM_PROMPT = """\
 You are a mise en place assistant. Your job is to reorganize recipe ingredients \
-into "bowls" — groups of ingredients that are prepped and used together at the \
-same point in the cooking method.
+into "bowls" — groups of ingredients that are prepped together and added to the \
+cooking vessel at the same moment.
+
+A "bowl" is one physical prep container. Two ingredients belong in the same bowl \
+only if they are added together with no cooking, waiting, or stirring in between. \
+If the method says to cook, sauté, simmer, or wait before adding the next \
+ingredient, that next ingredient must go in a separate bowl.
 
 Rules:
 - Every ingredient must appear in exactly one bowl. Do not skip or duplicate any.
 - Each bowl gets a short descriptive label (e.g. "Dry Ingredients", "Sauce") \
 and a one-sentence explanation of when/how the bowl is used in the method.
+- Order the bowls in the sequence they are used during cooking.
 - Method steps must be preserved exactly as written — do not rewrite them.
 - If an ingredient is used across multiple steps, place it in the bowl for \
 the step where it is first added.
-- Prefer fewer bowls when ingredients are used at the same time.
+- A single method step often describes a sequence of additions separated by \
+cook times. Read carefully — each addition point is a separate bowl.
 """
+
+
+class Provider(Protocol):
+    def analyze(self, system: str, user_content: str) -> BowledRecipe: ...
 
 
 class AnalyzeError(Exception):
     pass
 
 
+_PROVIDERS: dict[str, type] = {
+    "anthropic": AnthropicProvider,
+    "openai": OpenAIProvider,
+}
+
+
+def get_provider() -> Provider:
+    name = os.environ.get("AI_PROVIDER", "openai").lower()
+    cls = _PROVIDERS.get(name)
+    if cls is None:
+        supported = ", ".join(sorted(_PROVIDERS))
+        raise RuntimeError(
+            f"Unknown AI_PROVIDER '{name}'. Supported: {supported}"
+        )
+    return cls()
+
+
 def analyze_recipe(raw: RawRecipe) -> BowledRecipe:
-    client = anthropic.Anthropic(api_key=get_api_key())
+    provider = get_provider()
 
     if raw.ingredients:
         user_content = _structured_message(raw)
@@ -32,19 +63,9 @@ def analyze_recipe(raw: RawRecipe) -> BowledRecipe:
         user_content = _fallback_message(raw)
 
     try:
-        result = client.messages.parse(
-            model="claude-sonnet-4-5-20250514",
-            max_tokens=4096,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_content}],
-            output_format=BowledRecipe,
-        )
-    except anthropic.APIError as exc:
-        raise AnalyzeError(f"Claude API error: {exc}") from exc
-
-    parsed = result.parsed_output
-    if parsed is None:
-        raise AnalyzeError("Claude returned an empty response.")
+        parsed = provider.analyze(SYSTEM_PROMPT, user_content)
+    except Exception as exc:
+        raise AnalyzeError(f"AI provider error: {exc}") from exc
 
     parsed.source_url = raw.source_url
     return parsed
