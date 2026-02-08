@@ -39,3 +39,14 @@ def put(url: str, recipe: BowledRecipe) -> None:
         conn.commit()
     finally:
         conn.close()
+
+
+def recent(limit: int = 10) -> list[BowledRecipe]:
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            "SELECT data FROM cache ORDER BY created_at DESC LIMIT ?", (limit,)
+        ).fetchall()
+    finally:
+        conn.close()
+    return [BowledRecipe.model_validate_json(row[0]) for row in rows]

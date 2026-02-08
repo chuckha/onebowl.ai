@@ -9,4 +9,17 @@
         <button type="submit">Bowl it</button>
     </div>
 </form>
+
+{% if recipes %}
+<section class="recent-recipes">
+    <h2>Recent Recipes</h2>
+    <ul class="recipe-list">
+        {% for recipe in recipes %}
+        <li>
+            <a href="/recipe/{{ recipe.source_url | urlencode }}">{{ recipe.title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
 {% endblock %}

@@ -5,7 +5,7 @@ from flask import Flask, render_template, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-from cache import get as cache_get, put as cache_put
+from cache import get as cache_get, put as cache_put, recent as cache_recent
 from recipe_analyzer import AnalyzeError, analyze_recipe
 from recipe_fetcher import FetchError, fetch_recipe
 
@@ -18,7 +18,7 @@ APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", recipes=cache_recent())
 
 
 @app.route("/analyze", methods=["POST"])
@@ -51,6 +51,14 @@ def analyze():
         return render_template("error.html", message=str(exc)), 502
 
     cache_put(url, recipe)
+    return render_template("recipe.html", recipe=recipe)
+
+
+@app.route("/recipe/<path:url>")
+def view_recipe(url):
+    recipe = cache_get(url)
+    if recipe is None:
+        return render_template("error.html", message="Recipe not found."), 404
     return render_template("recipe.html", recipe=recipe)
 
 
