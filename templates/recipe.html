@@ -33,4 +33,12 @@
         {% endfor %}
     </ol>
 </section>
+
+{% if authenticated %}
+<section class="flag-section">
+    <form action="/flag/{{ recipe.source_url }}" method="post">
+        <button type="submit" class="flag-btn">Flag as incorrect</button>
+    </form>
+</section>
+{% endif %}
 {% endblock %}

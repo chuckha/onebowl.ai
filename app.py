@@ -1,15 +1,16 @@
 import os
 from urllib.parse import urldefrag, urlparse
 
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, session, url_for
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-from cache import get as cache_get, put as cache_put, recent as cache_recent
+from cache import flag as cache_flag, get as cache_get, put as cache_put, recent as cache_recent
 from recipe_analyzer import AnalyzeError, analyze_recipe
 from recipe_fetcher import FetchError, fetch_recipe
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", os.urandom(32))
 
 limiter = Limiter(get_remote_address, app=app, default_limits=[])
 
@@ -20,17 +21,35 @@ def normalize_url(url: str) -> str:
     return urldefrag(url).url
 
 
+@app.context_processor
+def inject_auth():
+    return {"authenticated": session.get("authenticated", False)}
+
+
 @app.route("/")
 def index():
     return render_template("index.html", recipes=cache_recent())
 
 
+@app.route("/login", methods=["POST"])
+def login():
+    password = request.form.get("password", "")
+    if APP_PASSWORD and password == APP_PASSWORD:
+        session["authenticated"] = True
+    return redirect(url_for("index"))
+
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
+
+
 @app.route("/analyze", methods=["POST"])
 @limiter.limit("30/hour")
 def analyze():
-    password = request.form.get("password", "")
-    if not APP_PASSWORD or password != APP_PASSWORD:
-        return render_template("error.html", message="Invalid password."), 403
+    if not session.get("authenticated"):
+        return render_template("error.html", message="Please log in first."), 403
 
     url = request.form.get("url", "").strip()
     if not url:
@@ -58,6 +77,16 @@ def analyze():
 
     cache_put(url, recipe)
     return render_template("recipe.html", recipe=recipe)
+
+
+@app.route("/flag/<path:url>", methods=["POST"])
+def flag_recipe(url):
+    if not session.get("authenticated"):
+        return render_template("error.html", message="Please log in first."), 403
+
+    url = normalize_url(url)
+    cache_flag(url)
+    return redirect(f"/recipe/{url}")
 
 
 @app.route("/recipe/<path:url>")

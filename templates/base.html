@@ -9,7 +9,21 @@
 <body>
     <div class="container">
         <header>
-            <a href="/" class="logo">OneBowl</a>
+            <div class="header-row">
+                <a href="/" class="logo">OneBowl</a>
+                <div class="auth-controls">
+                    {% if authenticated %}
+                    <form action="/logout" method="post">
+                        <button type="submit" class="auth-btn">Logout</button>
+                    </form>
+                    {% else %}
+                    <form action="/login" method="post" class="login-form">
+                        <input type="password" name="password" placeholder="Password" required>
+                        <button type="submit" class="auth-btn">Login</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
             <p class="tagline">Organize your recipe into mise en place bowls</p>
         </header>
         <main>

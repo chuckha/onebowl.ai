@@ -13,6 +13,11 @@ def _connect() -> sqlite3.Connection:
         "CREATE TABLE IF NOT EXISTS cache "
         "(url TEXT PRIMARY KEY, data TEXT NOT NULL, created_at REAL NOT NULL)"
     )
+    # Migration: add flagged column if it doesn't exist yet.
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(cache)").fetchall()}
+    if "flagged" not in columns:
+        conn.execute("ALTER TABLE cache ADD COLUMN flagged INTEGER NOT NULL DEFAULT 0")
+        conn.commit()
     return conn
 
 
@@ -50,3 +55,16 @@ def recent(limit: int = 10) -> list[BowledRecipe]:
     finally:
         conn.close()
     return [BowledRecipe.model_validate_json(row[0]) for row in rows]
+
+
+def flag(url: str) -> bool:
+    """Mark a recipe as flagged. Returns True if a row was updated."""
+    conn = _connect()
+    try:
+        cursor = conn.execute(
+            "UPDATE cache SET flagged = 1 WHERE url = ?", (url,)
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()
