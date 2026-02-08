@@ -1,3 +1,7 @@
+import ipaddress
+import socket
+from urllib.parse import urlparse
+
 import requests
 from bs4 import BeautifulSoup
 from recipe_scrapers import scrape_html
@@ -9,7 +13,27 @@ class FetchError(Exception):
     pass
 
 
+def _check_url_for_ssrf(url: str) -> None:
+    parsed = urlparse(url)
+    hostname = parsed.hostname
+    if not hostname:
+        raise FetchError("Invalid URL: no hostname found.")
+
+    try:
+        addrinfos = socket.getaddrinfo(hostname, None)
+    except socket.gaierror as exc:
+        raise FetchError(f"Could not resolve hostname: {exc}") from exc
+
+    for family, _, _, _, sockaddr in addrinfos:
+        ip_str = sockaddr[0]
+        addr = ipaddress.ip_address(ip_str)
+        if addr.is_private or addr.is_reserved or addr.is_loopback or addr.is_link_local:
+            raise FetchError("URLs pointing to private/internal networks are not allowed.")
+
+
 def fetch_recipe(url: str) -> RawRecipe:
+    _check_url_for_ssrf(url)
+
     try:
         resp = requests.get(url, timeout=15, headers={"User-Agent": "OneBowl/1.0"})
         resp.raise_for_status()

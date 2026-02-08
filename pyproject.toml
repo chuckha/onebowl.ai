@@ -12,4 +12,5 @@ dependencies = [
     "pydantic>=2.12.5",
     "python-dotenv>=1.2.1",
     "recipe-scrapers>=15.11.0",
+    "flask-limiter>=3.5.0",
 ]

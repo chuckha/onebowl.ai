@@ -1,12 +1,19 @@
+import os
 from urllib.parse import urlparse
 
 from flask import Flask, render_template, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from cache import get as cache_get, put as cache_put
 from recipe_analyzer import AnalyzeError, analyze_recipe
 from recipe_fetcher import FetchError, fetch_recipe
 
 app = Flask(__name__)
+
+limiter = Limiter(get_remote_address, app=app, default_limits=[])
+
+APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
 
 
 @app.route("/")
@@ -15,7 +22,12 @@ def index():
 
 
 @app.route("/analyze", methods=["POST"])
+@limiter.limit("30/hour")
 def analyze():
+    password = request.form.get("password", "")
+    if not APP_PASSWORD or password != APP_PASSWORD:
+        return render_template("error.html", message="Invalid password."), 403
+
     url = request.form.get("url", "").strip()
     if not url:
         return render_template("error.html", message="Please enter a URL."), 400
@@ -40,3 +52,8 @@ def analyze():
 
     cache_put(url, recipe)
     return render_template("recipe.html", recipe=recipe)
+
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return render_template("error.html", message="Too many requests. Please try again later."), 429
