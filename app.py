@@ -2,6 +2,7 @@ from urllib.parse import urlparse
 
 from flask import Flask, render_template, request
 
+from cache import get as cache_get, put as cache_put
 from recipe_analyzer import AnalyzeError, analyze_recipe
 from recipe_fetcher import FetchError, fetch_recipe
 
@@ -23,6 +24,10 @@ def analyze():
     if parsed.scheme not in ("http", "https") or not parsed.netloc:
         return render_template("error.html", message="Please enter a valid URL."), 400
 
+    cached = cache_get(url)
+    if cached is not None:
+        return render_template("recipe.html", recipe=cached)
+
     try:
         raw = fetch_recipe(url)
     except FetchError as exc:
@@ -33,4 +38,5 @@ def analyze():
     except AnalyzeError as exc:
         return render_template("error.html", message=str(exc)), 502
 
+    cache_put(url, recipe)
     return render_template("recipe.html", recipe=recipe)
