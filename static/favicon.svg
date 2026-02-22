@@ -1,45 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Bowl favicon">
-  <!-- Transparent background -->
-  <rect width="512" height="512" fill="none"/>
+  <defs>
+    <linearGradient id="bowl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1f2937"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="bowl-dark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e5e7eb"/>
+      <stop offset="100%" stop-color="#d1d5db"/>
+    </linearGradient>
+    <linearGradient id="inner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4b5563"/>
+      <stop offset="100%" stop-color="#374151"/>
+    </linearGradient>
+    <linearGradient id="inner-dark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f9fafb"/>
+      <stop offset="100%" stop-color="#f3f4f6"/>
+    </linearGradient>
+    <radialGradient id="shine" cx="0.35" cy="0.3" r="0.5">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shine-dark" cx="0.35" cy="0.3" r="0.5">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .bowl-outer { fill: url(#bowl); }
+      .bowl-inner { fill: url(#inner); }
+      .rim { stroke: #4b5563; }
+      .inner-rim { stroke: #1f2937; }
+      .shine { fill: url(#shine); }
+      .reflection { fill: #ffffff; opacity: 0.06; }
 
-  <!-- Bowl body -->
-  <path
-    d="M128 224
-       C128 170 188 136 256 136
-       C324 136 384 170 384 224
-       L384 260
-       C384 340 332 396 256 396
-       C180 396 128 340 128 260
-       Z"
-    fill="#111827"/>
+      @media (prefers-color-scheme: dark) {
+        .bowl-outer { fill: url(#bowl-dark); }
+        .bowl-inner { fill: url(#inner-dark); }
+        .rim { stroke: #9ca3af; }
+        .inner-rim { stroke: #d1d5db; }
+        .shine { fill: url(#shine-dark); }
+        .reflection { fill: #ffffff; opacity: 0.1; }
+      }
+    </style>
+  </defs>
 
-  <!-- Inner bowl lip -->
-  <path
-    d="M160 232
-       C160 198 204 176 256 176
-       C308 176 352 198 352 232
-       C352 248 336 260 320 260
-       L192 260
-       C176 260 160 248 160 232
-       Z"
-    fill="#374151"/>
-
-  <!-- Bowl base -->
-  <path
-    d="M196 396
-       L316 396
-       C320 422 302 448 256 448
-       C210 448 192 422 196 396
-       Z"
-    fill="#111827"/>
-
-  <!-- Simple highlight -->
-  <path
-    d="M168 268
-       C168 328 206 372 256 372
-       C274 372 292 368 308 360
-       C264 384 214 378 182 344
-       C162 322 156 296 168 268
-       Z"
-    fill="#6B7280" opacity="0.35"/>
+  <g transform="translate(256 256) scale(1.15) translate(-256 -270)">
+    <ellipse cx="256" cy="200" rx="200" ry="72" class="bowl-outer"/>
+    <path d="M56 200 C56 200 72 340 176 390 L336 390 C440 340 456 200 456 200 Z" class="bowl-outer"/>
+    <ellipse cx="256" cy="200" rx="168" ry="56" class="bowl-inner"/>
+    <ellipse cx="256" cy="200" rx="200" ry="72" fill="none" class="rim" stroke-width="4"/>
+    <ellipse cx="256" cy="200" rx="168" ry="56" fill="none" class="inner-rim" stroke-width="2"/>
+    <ellipse cx="220" cy="190" rx="120" ry="40" class="shine"/>
+    <path d="M100 260 C120 340 200 390 256 400 C200 380 140 330 120 270 Z" class="reflection"/>
+  </g>
 </svg>
