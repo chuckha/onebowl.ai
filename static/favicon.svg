@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Bowl favicon">
+  <!-- Transparent background -->
+  <rect width="512" height="512" fill="none"/>
+
+  <!-- Bowl body -->
+  <path
+    d="M128 224
+       C128 170 188 136 256 136
+       C324 136 384 170 384 224
+       L384 260
+       C384 340 332 396 256 396
+       C180 396 128 340 128 260
+       Z"
+    fill="#111827"/>
+
+  <!-- Inner bowl lip -->
+  <path
+    d="M160 232
+       C160 198 204 176 256 176
+       C308 176 352 198 352 232
+       C352 248 336 260 320 260
+       L192 260
+       C176 260 160 248 160 232
+       Z"
+    fill="#374151"/>
+
+  <!-- Bowl base -->
+  <path
+    d="M196 396
+       L316 396
+       C320 422 302 448 256 448
+       C210 448 192 422 196 396
+       Z"
+    fill="#111827"/>
+
+  <!-- Simple highlight -->
+  <path
+    d="M168 268
+       C168 328 206 372 256 372
+       C274 372 292 368 308 360
+       C264 384 214 378 182 344
+       C162 322 156 296 168 268
+       Z"
+    fill="#6B7280" opacity="0.35"/>
+</svg>

@@ -28,7 +28,7 @@ def inject_auth():
 
 @app.route("/favicon.ico")
 def favicon():
-    return send_from_directory("static", "favicon.png", mimetype="image/png")
+    return send_from_directory("static", "favicon.svg", mimetype="image/svg+xml")
 
 
 @app.route("/")
